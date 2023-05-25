@@ -1,8 +1,17 @@
 import * as basicLightbox from 'basiclightbox';
 import 'basiclightbox/dist/basicLightbox.min.css';
+import { closeModal } from './closeModal';
 
 function createModal(product) {
-  const instance = basicLightbox.create(`
+  //  const options = {
+  //    onShow() {
+  //      document.addEventListener('keydown', closeModal);
+  //    },
+  //    onClose() {},
+  //  };
+
+  const instance = basicLightbox.create(
+    `
 	   <div class="modal">
         <img src="${product.img}" alt="${product.name}" width="200"/>
         <h2>${product.name}</h2>
@@ -13,7 +22,19 @@ function createModal(product) {
           <button class="js-basket">Add to basket</button>
         </div>
       </div>
-`);
+`,
+    {
+      handler: null,
+      onShow() {
+        console.log(this);
+        this.handler = closeModal.bind(instance);
+        document.addEventListener('keydown', this.handler);
+      },
+      onClose() {
+        document.removeEventListener('keydown', this.handler);
+      },
+    }
+  );
   instance.show();
 }
 
