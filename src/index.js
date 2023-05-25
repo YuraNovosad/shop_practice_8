@@ -1,3 +1,7 @@
+import { common } from './common';
+import { createMarckup } from './helper/createMarckup';
+import { createModal } from './helper/createModal';
+
 const instruments = [
   {
     id: 1,
@@ -67,30 +71,39 @@ const instruments = [
 
 const search = document.querySelector('.js-search');
 const list = document.querySelector('.js-list');
+const favoriteArr = JSON.parse(localStorage.getItem(common.KEY_FAVORITE)) ?? [];
+const basketArr = JSON.parse(localStorage.getItem(common.KEY_BASKET)) ?? [];
 
-function createMarckup(arr) {
-  const markup = arr
-    .map(
-      ({ id, img, name }) => `
-      <li data-id="${id}">
-        <img src="${img}" alt="${name}" width=300>
-        <h2>${name}</h2>
-        <p class="js-info"><a href="#">More information</a></p>
-        <div>
-          <button>Add to favorite</button>
-          <button>Add to basket</button>
-        </div>
-      </li>`
-    )
-    .join('');
-
-  list.innerHTML = markup;
-}
-
+createMarckup(instruments, list);
 list.addEventListener('click', onClick);
 
 function onClick(evt) {
   evt.preventDefault();
+  if (evt.target.classList.contains('js-info')) {
+    const product = findProduct(evt.target);
+    createModal(product);
+  }
+
+  if (evt.target.classList.contains('js-basket')) {
+    const product = findProduct(evt.target);
+    basketArr.push(product);
+    localStorage.setItem(common.KEY_BASKET, JSON.stringify(basketArr));
+  }
+
+  if (evt.target.classList.contains('js-favorite')) {
+    const product = findProduct(evt.target);
+    const favoriteInStorage = favoriteArr.some(({ id }) => id === product.id);
+
+    if (favoriteInStorage) {
+      return;
+    }
+
+    favoriteArr.push(product);
+    localStorage.setItem(common.KEY_FAVORITE, JSON.stringify(favoriteArr));
+  }
 }
 
-createMarckup(instruments);
+function findProduct(elem) {
+  const productId = Number(elem.closest('.js-card').dataset.id);
+  return instruments.find(({ id }) => id === productId);
+}
