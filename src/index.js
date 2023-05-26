@@ -42,3 +42,24 @@ function findProduct(elem) {
   const productId = Number(elem.closest('.js-card').dataset.id);
   return instruments.find(({ id }) => id === productId);
 }
+
+//?vimeo-player?
+
+import Player from '@vimeo/player';
+const player = new Player('handstick', {
+  id: 19231868,
+  width: 640,
+});
+
+console.log(player);
+
+player.on('play', function () {
+  console.log('played the video!');
+});
+
+const options = {
+  width: 640,
+  loop: true,
+};
+
+//?
